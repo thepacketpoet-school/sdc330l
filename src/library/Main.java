@@ -1,166 +1,85 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 3
+   Assignment: Project Part 4
    Author: Haley Archer
-   Date: 26 Oct 2025
-   Purpose: Main entry point demonstrating Week 3 requirements.
-            
-            **WEEK 3 DEMONSTRATIONS:**
-            - Abstract Media class and abstract methods
-            - Multiple constructors with chaining
-            - Proper access specifiers (public/protected/private)
+   Date: 02 Nov 2025
+   Purpose: Main entry point with database integration.
    -------------------------------------------------------------- */
 
 package library;
 
 import java.util.Scanner;
+import java.util.List;
 
-/**
- * Main class – runs the console UI loop.
- *
- * **WEEK 3**: Demonstrates abstraction, constructors, and access specifiers
- */
 public class Main {
 
-    // **WEEK 3: ACCESS SPECIFIERS**
-    // Private static fields - only accessible within Main class
     private static final Scanner SCANNER = new Scanner(System.in);
+    private static DatabaseManager dbManager;
     private static Library library;
     private static User currentUser;
 
     public static void main(String[] args) {
-        // Display Week 3 header
         MessageBox.printHeader();
-
-        // Initialize library and user
         initializeSystem();
-
-        // Demonstrate Week 3 features
-        demonstrateWeek3Features();
-
-        // Run UI loop
         runApplicationLoop();
-
-        // Exit
+        dbManager.close();
         MessageBox.goodbye();
         SCANNER.close();
     }
 
-    /**
-     * **WEEK 3: CONSTRUCTORS DEMONSTRATION**
-     * Shows different constructor usage.
-     */
     private static void initializeSystem() {
-        System.out.println("═══ INITIALIZING SYSTEM ═══\n");
+        System.out.println("═══ INITIALIZING SYSTEM (WEEK 4: DATABASE) ═══\n");
         
-        // **CONSTRUCTORS**: Library with custom name
+        dbManager = new DatabaseManager();
+
+        List<Media> existingMedia = dbManager.getAllMedia();
+        if (existingMedia.isEmpty()) {
+            System.out.println("Database is empty. Seeding with initial data...");
+            seedDatabase();
+            // DON'T call getAllMedia again - we'll load into library directly
+        }
+        
+        // Load whatever is in database (fresh load)
+        Media.setNextId(1);  // Reset counter
+        existingMedia = dbManager.getAllMedia();  // Load with database constructors
+
         library = new Library("Community Book-Sharing Library");
-        System.out.println("✓ Library created: " + library.getLibraryName());
+        for (Media media : existingMedia) {
+            library.addMedia(media);
+        }
         
-        // **CONSTRUCTORS**: User with starting balance
-        currentUser = new User("Alice", 100.00);
-        System.out.println("✓ User created: " + currentUser);
+        currentUser = dbManager.getUserByName("Alice");
+        if (currentUser == null) {
+            dbManager.addUser("Alice", 100.00);
+            currentUser = new User("Alice", 100.00);
+            System.out.println("✓ Created new user: Alice");
+        } else {
+            System.out.println("✓ Loaded user: " + currentUser);
+        }
         
-        // Seed data demonstrating various constructors
-        seedDemoData();
-        
+        dbManager.displayStatistics();
         System.out.println("\n═══════════════════════════════════\n");
     }
 
-    /**
-     * **WEEK 3: ABSTRACTION DEMONSTRATION**
-     * Shows abstract Media class and polymorphic method calls.
-     */
-    private static void demonstrateWeek3Features() {
-        System.out.println("═══ WEEK 3 FEATURE DEMONSTRATION ═══\n");
+    private static void seedDatabase() {
+        Media[] initialMedia = {
+            new EBook("The Time Machine", "H. G. Wells", 4.99,
+                     "Science Fiction", 4.2, 118, "EPUB", 2.1),
+            new Audiobook("Pride and Prejudice", "Jane Austen", 3.49,
+                         "Classic", 4.5, 0, 720, "Rosamund Pike"),
+            new EBook("Dune", "Frank Herbert", 5.99,
+                     "Science Fiction", 4.7, 412, "PDF", 3.4),
+            new Audiobook("1984", "George Orwell", 4.49,
+                         "Dystopian", 4.6, 0, 600, "Simon Prebble"),
+            new Book("To Kill a Mockingbird", "Harper Lee", 7.99,
+                    "Fiction", 4.8, 324)
+        };
         
-        System.out.println("** ABSTRACTION DEMONSTRATION **");
-        System.out.println("All media types extend abstract Media class");
-        System.out.println("Each implements abstract methods differently:\n");
-        
-        // Create instances using different constructors
-        Book book = new Book("1984", "George Orwell", 12.99, "Dystopian", 4.8, 328);
-        EBook ebook = new EBook("Neuromancer", "William Gibson", 9.99, 
-                               "Cyberpunk", 4.6, "EPUB", 2.3);
-        Audiobook audiobook = new Audiobook("Dune", "Frank Herbert", 14.99,
-                                           "Sci-Fi", 4.9, 600, 1260, "Scott Brick");
-        
-        Media[] mediaItems = {book, ebook, audiobook};
-        
-        // **ABSTRACTION**: Polymorphic calls to abstract methods
-        for (Media media : mediaItems) {
-            System.out.printf("Title: %-20s Type: %-10s\n", 
-                            media.getTitle(), media.getMediaType());
-            System.out.printf("  Info: %s\n", media.getTypeSpecificInfo());
-            System.out.printf("  Borrow Period: %d days\n", media.getBorrowPeriodDays());
-            // Calling abstract method - each type calculates differently
-            System.out.printf("  Late Fee (7 days): $%.2f\n", 
-                            media.calculateLateFee(7));
-            System.out.println();
+        for (Media media : initialMedia) {
+            int id = dbManager.addMedia(media);
+            System.out.println("  ✓ Added: " + media.getTitle() + " (ID: " + id + ")");
         }
-        
-        System.out.println("Notice: Same method calls, different behavior!");
-        System.out.println("This is polymorphism with abstract classes.\n");
-        
-        System.out.println("** CONSTRUCTORS DEMONSTRATION **");
-        System.out.println("Multiple constructors with validation:\n");
-        
-        // Full constructor
-        Book fullBook = new Book("Title", "Author", 9.99, "Fiction", 4.5, 300);
-        System.out.println("✓ Full constructor: " + fullBook.getTitle());
-        
-        // Partial constructor (constructor chaining)
-        Book partialBook = new Book("Short Title", "Author", 5.99, "Fiction", 4.0);
-        System.out.println("✓ Partial constructor (chains to full): " + partialBook.getTitle());
-        
-        // Minimal constructor
-        Book minimalBook = new Book("Minimal", "Author");
-        System.out.println("✓ Minimal constructor (chains with defaults): " + minimalBook.getTitle());
-        
-        System.out.println("\n** ACCESS SPECIFIERS DEMONSTRATION **");
-        System.out.println("Proper encapsulation implemented:");
-        System.out.println("  • Private fields (wallet, borrower, etc.)");
-        System.out.println("  • Protected methods (for inheritance)");
-        System.out.println("  • Public methods (for external access)");
-        System.out.println("  • Package-private (for related classes only)\n");
-        
-        System.out.println("═══════════════════════════════════\n");
     }
 
-    /**
-     * Seed the catalogue with demo data.
-     * **WEEK 3**: Uses different constructors.
-     */
-    private static void seedDemoData() {
-        // Using various constructors to demonstrate flexibility
-        
-        // Full constructor
-        library.addMedia(new EBook(
-                "The Time Machine", "H. G. Wells", 4.99,
-                "Science Fiction", 4.2, 118,
-                "EPUB", 2.1));
-        
-        // Partial constructor
-        library.addMedia(new Audiobook(
-                "Pride and Prejudice", "Jane Austen", 3.49,
-                "Classic", 4.5,
-                720, "Rosamund Pike"));
-        
-        library.addMedia(new EBook(
-                "Dune", "Frank Herbert", 5.99,
-                "Science Fiction", 4.7, 412,
-                "PDF", 3.4));
-        
-        library.addMedia(new Audiobook(
-                "1984", "George Orwell", 4.49,
-                "Dystopian", 4.6,
-                600, "Simon Prebble"));
-        
-        System.out.println("✓ Catalogue populated with 4 books");
-    }
-
-    /**
-     * Main application loop.
-     */
     private static void runApplicationLoop() {
         boolean running = true;
         while (running) {
@@ -168,82 +87,162 @@ public class Main {
             String input = SCANNER.nextLine().trim().toUpperCase();
 
             switch (input) {
-                case "B":
-                    library.listCatalog();
-                    break;
-                case "P":
-                    handlePurchase();
-                    break;
-                case "L":
-                    handleBorrow();
-                    break;
-                case "R":
-                    handleReturn();
-                    break;
-                case "F":  // NEW for Week 3
-                    handleLateFee();
-                    break;
-                case "M":
-                    currentUser.getShelf().listOwnedBooks();
-                    break;
-                case "Q":
-                    running = false;
-                    break;
-                default:
-                    System.out.println("Unrecognized command – please try again.");
+                case "B": library.listCatalog(); break;
+                case "A": handleAddMedia(); break;
+                case "E": handleEditMedia(); break;
+                case "D": handleDeleteMedia(); break;
+                case "P": handlePurchase(); break;
+                case "L": handleBorrow(); break;
+                case "R": handleReturn(); break;
+                case "H": dbManager.displayTransactionHistory(currentUser.getName()); break;
+                case "S": dbManager.displayStatistics(); break;
+                case "M": currentUser.getShelf().listOwnedBooks(); break;
+                case "Q": running = false; break;
+                default: System.out.println("Unrecognized command.");
             }
         }
     }
 
-    // **WEEK 3: ACCESS SPECIFIERS**
-    // Private helper methods - only used within Main class
+    private static void handleAddMedia() {
+        System.out.println("\n=== ADD NEW MEDIA ===");
+        System.out.print("Title: ");
+        String title = SCANNER.nextLine().trim();
+        System.out.print("Author/Creator: ");
+        String creator = SCANNER.nextLine().trim();
+        System.out.print("Price: $");
+        double price = Double.parseDouble(SCANNER.nextLine().trim());
+        System.out.print("Genre: ");
+        String genre = SCANNER.nextLine().trim();
+        System.out.print("Rating (0-5): ");
+        double rating = Double.parseDouble(SCANNER.nextLine().trim());
+        System.out.print("Type (1=Book, 2=E-Book, 3=Audiobook): ");
+        int type = Integer.parseInt(SCANNER.nextLine().trim());
+        
+        Media media = null;
+        if (type == 1) {
+            System.out.print("Page count: ");
+            int pages = Integer.parseInt(SCANNER.nextLine().trim());
+            media = new Book(title, creator, price, genre, rating, pages);
+        } else if (type == 2) {
+            System.out.print("Format (PDF/EPUB): ");
+            String format = SCANNER.nextLine().trim();
+            System.out.print("File size (MB): ");
+            double size = Double.parseDouble(SCANNER.nextLine().trim());
+            media = new EBook(title, creator, price, genre, rating, 0, format, size);
+        } else if (type == 3) {
+            System.out.print("Duration (minutes): ");
+            int duration = Integer.parseInt(SCANNER.nextLine().trim());
+            System.out.print("Narrator: ");
+            String narrator = SCANNER.nextLine().trim();
+            media = new Audiobook(title, creator, price, genre, rating, 0, duration, narrator);
+        }
+        
+        if (media != null) {
+            int id = dbManager.addMedia(media);
+            if (id > 0) {
+                library.addMedia(media);
+                System.out.println("✓ Media added! (ID: " + id + ")");
+            }
+        }
+    }
+
+    private static void handleEditMedia() {
+        System.out.print("Enter media ID to edit: ");
+        int id = Integer.parseInt(SCANNER.nextLine().trim());
+        
+        Media media = dbManager.getMediaById(id);
+        if (media == null) {
+            System.out.println("Media not found.");
+            return;
+        }
+        
+        System.out.println("Current: " + media.getTitle());
+        System.out.print("New title (Enter to keep): ");
+        String title = SCANNER.nextLine().trim();
+        if (title.isEmpty()) title = media.getTitle();
+        
+        System.out.print("New price (Enter to keep $" + media.getPrice() + "): ");
+        String priceStr = SCANNER.nextLine().trim();
+        double price = priceStr.isEmpty() ? media.getPrice() : Double.parseDouble(priceStr);
+        
+        System.out.print("New rating (Enter to keep " + media.getRating() + "): ");
+        String ratingStr = SCANNER.nextLine().trim();
+        double rating = ratingStr.isEmpty() ? media.getRating() : Double.parseDouble(ratingStr);
+        
+        if (dbManager.updateMedia(id, title, price, rating)) {
+            System.out.println("✓ Updated!");
+            reloadLibrary();
+        }
+    }
+
+    private static void handleDeleteMedia() {
+        System.out.print("Enter media ID to delete: ");
+        int id = Integer.parseInt(SCANNER.nextLine().trim());
+        
+        Media media = dbManager.getMediaById(id);
+        if (media == null) {
+            System.out.println("Media not found.");
+            return;
+        }
+        
+        System.out.print("Delete \"" + media.getTitle() + "\"? (yes/no): ");
+        String confirm = SCANNER.nextLine().trim().toLowerCase();
+        
+        if (confirm.equals("yes") || confirm.equals("y")) {
+            if (dbManager.deleteMedia(id)) {
+                System.out.println("✓ Deleted!");
+                reloadLibrary();
+            }
+        }
+    }
     
+    private static void reloadLibrary() {
+        List<Media> updated = dbManager.getAllMedia();
+        int maxId = 0;
+        for (Media m : updated) {
+            if (m.getId() > maxId) maxId = m.getId();
+        }
+        Media.setNextId(maxId + 1);
+        
+        library = new Library("Community Book-Sharing Library");
+        for (Media m : updated) library.addMedia(m);
+    }
+
     private static void handlePurchase() {
-        System.out.print("Enter the ID of the book you wish to purchase: ");
+        System.out.print("Enter media ID: ");
         try {
             int id = Integer.parseInt(SCANNER.nextLine().trim());
             library.purchase(currentUser, id);
+            dbManager.updateUserWallet(currentUser.getName(), currentUser.getWallet());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid ID. Please enter a number.");
+            System.out.println("Invalid ID.");
         }
     }
 
     private static void handleBorrow() {
-        System.out.print("Enter the ID of the book you wish to borrow: ");
+        System.out.print("Enter media ID: ");
         try {
             int id = Integer.parseInt(SCANNER.nextLine().trim());
             library.borrowMedia(currentUser, id);
+            Media media = dbManager.getMediaById(id);
+            if (media != null && media.isBorrowed()) {
+                dbManager.updateBorrowStatus(id, true, currentUser.getName());
+                dbManager.logTransaction(1, id, "BORROW", 0.0);
+            }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid ID. Please enter a number.");
+            System.out.println("Invalid ID.");
         }
     }
 
     private static void handleReturn() {
-        System.out.print("Enter the ID of the book you wish to return: ");
+        System.out.print("Enter media ID: ");
         try {
             int id = Integer.parseInt(SCANNER.nextLine().trim());
             library.returnMedia(currentUser, id);
+            dbManager.updateBorrowStatus(id, false, null);
+            dbManager.logTransaction(1, id, "RETURN", 0.0);
         } catch (NumberFormatException e) {
-            System.out.println("Invalid ID. Please enter a number.");
-        }
-    }
-
-    /**
-     * **WEEK 3: NEW FEATURE**
-     * Calculate late fees - demonstrates abstract method usage.
-     */
-    private static void handleLateFee() {
-        System.out.print("Enter the ID of the media item: ");
-        try {
-            int id = Integer.parseInt(SCANNER.nextLine().trim());
-            System.out.print("Enter number of days late: ");
-            int days = Integer.parseInt(SCANNER.nextLine().trim());
-            
-            // **ABSTRACTION**: calculateLateFee is an abstract method
-            // Each media type implements it differently
-            library.calculateLateFeeForItem(id, days);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter numbers only.");
+            System.out.println("Invalid ID.");
         }
     }
 }
