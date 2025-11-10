@@ -1,116 +1,96 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 2
+   Assignment: Project Part 3
    Author: Haley Archer
-   Date: 19 Oct 2025
-   Purpose: Base class for all book types. Now implements Borrowable
-            interface to allow books to be borrowed from the library.
+   Date: 26 Oct 2025
+   Purpose: Book class now extends abstract Media class.
             
-            Demonstrates:
-            - **Inheritance** (derived classes extend this)
-            - **Interface implementation** (implements Borrowable)
+            **WEEK 3 UPDATES:**
+            - Now extends abstract Media instead of being base class
+            - Implements abstract methods from Media
+            - Enhanced constructors with validation
+            - Proper access specifiers
    -------------------------------------------------------------- */
 
 package library;
 
 /**
- * Base class that holds the common attributes of any book.
+ * Book class representing physical and digital books.
  * 
- * **WEEK 2: Now implements Borrowable interface**
+ * **WEEK 3: Extends abstract Media class**
+ * Inherits common media functionality and implements book-specific behavior.
  */
-public class Book implements Borrowable {
-    // ---------- static ID generator ----------
-    protected static int NEXT_ID = 1;
-
-    // ---------- instance fields ----------
-    protected final int id;          // unique identifier
-    protected String title;
-    protected String author;
-    protected double price;
-    protected String genre;          // e.g., "Science Fiction"
-    protected double rating;         // 0.0 – 5.0 stars
+public class Book extends Media {
     
-    // ---------- borrowable state ----------
-    private boolean borrowed;
-    private String borrower;
-    private int borrowPeriodDays;
-
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Private fields - only accessible within this class
+    private String genre;
+    private int pageCount;
+    
+    // **WEEK 3: CONSTRUCTORS**
+    // Constructor 1: Full constructor with all book details
     /**
-     * Constructor for the base Book.
+     * Full constructor for creating a book with all details.
+     * Validates input and initializes all fields.
      */
-    public Book(String title, String author, double price,
-                String genre, double rating) {
-        this.id = NEXT_ID++;
-        this.title = title;
-        this.author = author;
-        this.price = price;
-        this.genre = genre;
-        this.rating = rating;
-        this.borrowed = false;
-        this.borrower = null;
-        this.borrowPeriodDays = 14;  // default 2 weeks
+    public Book(String title, String author, double price, String genre, 
+                double rating, int pageCount) {
+        super(title, author, price, rating);  // Call Media constructor
+        this.genre = (genre != null && !genre.isEmpty()) ? genre : "General";
+        this.pageCount = (pageCount > 0) ? pageCount : 0;
     }
-
-    /** Returns a short description – overridden by children to add type. */
-    public String getType() {
-        return "Generic Book";
+    
+    // **WEEK 3: CONSTRUCTORS**
+    // Constructor 2: Without page count - constructor chaining
+    /**
+     * Constructor without page count.
+     * Demonstrates constructor chaining.
+     */
+    public Book(String title, String author, double price, String genre, double rating) {
+        this(title, author, price, genre, rating, 0);
     }
-
-    /** Human-readable representation used by the UI. */
+    
+    // **WEEK 3: CONSTRUCTORS**
+    // Constructor 3: Minimal constructor - constructor chaining
+    /**
+     * Minimal constructor with just title and author.
+     * Uses default values for other fields.
+     */
+    public Book(String title, String author) {
+        this(title, author, 0.0, "General", 0.0, 0);
+    }
+    
+    // **WEEK 3: ABSTRACTION**
+    // Implementation of abstract methods from Media
+    
+    @Override
+    public String getMediaType() {
+        return "Book";
+    }
+    
+    @Override
+    public String getTypeSpecificInfo() {
+        return String.format("Genre: %s, Pages: %d", genre, pageCount);
+    }
+    
+    @Override
+    public double calculateLateFee(int daysLate) {
+        // Books: $0.50 per day late
+        return daysLate * 0.50;
+    }
+    
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Public getters for book-specific fields
+    public String getGenre() {
+        return genre;
+    }
+    
+    public int getPageCount() {
+        return pageCount;
+    }
+    
+    // Override toString to include book-specific info
     @Override
     public String toString() {
-        String status = borrowed ? "[BORROWED]" : "[AVAILABLE]";
-        return String.format("%-3d %-25s %-20s %-12s $%-7.2f %-6.1f %-10s %s",
-                id, title, author, genre, price, rating, getType(), status);
+        return super.toString() + String.format(" [%s]", genre);
     }
-
-    // -----------------------------------------------------------------
-    // Borrowable Interface Implementation
-    // **WEEK 2: Demonstrates interface implementation**
-    // -----------------------------------------------------------------
-    
-    @Override
-    public boolean borrow(String userName) {
-        if (borrowed) {
-            return false;
-        }
-        this.borrowed = true;
-        this.borrower = userName;
-        return true;
-    }
-    
-    @Override
-    public boolean returnItem() {
-        if (!borrowed) {
-            return false;
-        }
-        this.borrowed = false;
-        this.borrower = null;
-        return true;
-    }
-    
-    @Override
-    public boolean isBorrowed() {
-        return borrowed;
-    }
-    
-    @Override
-    public String getBorrower() {
-        return borrower;
-    }
-    
-    @Override
-    public int getBorrowPeriodDays() {
-        return borrowPeriodDays;
-    }
-    
-    protected void setBorrowPeriod(int days) {
-        this.borrowPeriodDays = days;
-    }
-
-    // -----------------------------------------------------------------
-    // Getters / setters (only the ones we need for the demo)
-    // -----------------------------------------------------------------
-    public int getId() { return id; }
-    public String getTitle() { return title; }
-    public double getPrice() { return price; }
 }

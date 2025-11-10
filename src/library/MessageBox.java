@@ -1,57 +1,55 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 2
+   Assignment: Project Part 3
    Author: Haley Archer
-   Date: 19 Oct 2025
-   Purpose: Small utility class that centralizes all UI text.
-            Keeps the Main class tidy and demonstrates modularization.
+   Date: 26 Oct 2025
+   Purpose: UI messaging utility with Week 3 updates.
    -------------------------------------------------------------- */
 
 package library;
 
 /**
- * Static helper that prints the banner, menu, and exit line.
+ * Static helper for all UI text.
  */
 public class MessageBox {
 
-    /** Prints the week-2 indicator, title, and quote. */
+    /** Prints the week-3 indicator and welcome. */
     public static void printHeader() {
-        System.out.println("=== Online Book-Sharing Library – Week 2 Project ===");
-        System.out.println("Student: Haley Archer");
-        System.out.println("-------------------------------------------------");
-        System.out.println(
-                "\"A good book is a friend you can carry anywhere; a best friend is one who shares good books.\"");
-        System.out.println("-------------------------------------------------");
-        System.out.println("\nWelcome! This console application lets you:");
-        System.out.println(" • Browse the catalogue");
-        System.out.println(" • Purchase books");
-        System.out.println(" • Borrow books (NEW!)");
-        System.out.println(" • Return borrowed books (NEW!)");
-        System.out.println(" • Share books you have finished");
-        System.out.println(" • View your personal library");
-        System.out.println("\n** Week 2 Features: Interface implementation & Polymorphism **");
-        System.out.println("   - All books implement the Borrowable interface");
-        System.out.println("   - Different book types have different borrow periods!");
-        System.out.println("     * Regular books: 14 days");
-        System.out.println("     * E-books: 21 days");
-        System.out.println("     * Audiobooks: 30 days");
-        System.out.println();
+        System.out.println("╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║   Online Book-Sharing Library – Week 3 Project              ║");
+        System.out.println("║   Student: Haley Archer                                      ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
+        System.out.println("\n\"A good book is a friend you can carry anywhere;");
+        System.out.println(" a best friend is one who shares good books.\"\n");
+        
+        System.out.println("═══ WEEK 3 FEATURES ═══");
+        System.out.println("✓ ABSTRACTION: Abstract Media class with abstract methods");
+        System.out.println("✓ CONSTRUCTORS: Multiple constructors with chaining");
+        System.out.println("✓ ACCESS SPECIFIERS: Proper public/protected/private usage");
+        System.out.println("\nNew in Week 3:");
+        System.out.println("  • Abstract Media base class for all media types");
+        System.out.println("  • calculateLateFee() - different fees per media type");
+        System.out.println("  • Enhanced input validation in constructors");
+        System.out.println("  • Improved encapsulation with access control\n");
     }
 
     /** Shows the main command menu. */
     public static void printMenu() {
-        System.out.println("\nPlease choose an option:");
+        System.out.println("\n╔═══ MENU ═══╗");
         System.out.println("  (B)rowse catalogue");
         System.out.println("  (P)urchase a book");
         System.out.println("  (L)oan a book (borrow)");
         System.out.println("  (R)eturn a book");
-        System.out.println("  (S)hare a finished book");
+        System.out.println("  (F)ee calculation (NEW!)");
         System.out.println("  (M)y library");
         System.out.println("  (Q)uit");
-        System.out.print("Enter command: ");
+        System.out.print("\nEnter command: ");
     }
 
-    /** Friendly goodbye line shown when the user quits. */
+    /** Goodbye message. */
     public static void goodbye() {
-        System.out.println("\nThank you for using the Book-Sharing Library. Goodbye!");
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║  Thank you for using our library!     ║");
+        System.out.println("║  Come back soon!                      ║");
+        System.out.println("╚════════════════════════════════════════╝");
     }
 }

@@ -1,11 +1,13 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 2
+   Assignment: Project Part 3
    Author: Haley Archer
-   Date: 19 Oct 2025
-   Purpose: Entry point. Shows the week-2 indicator, welcome
-            message, and drives the simple console UI.
+   Date: 26 Oct 2025
+   Purpose: Main entry point demonstrating Week 3 requirements.
             
-            **WEEK 2: Demonstrates polymorphism with Borrowable interface**
+            **WEEK 3 DEMONSTRATIONS:**
+            - Abstract Media class and abstract methods
+            - Multiple constructors with chaining
+            - Proper access specifiers (public/protected/private)
    -------------------------------------------------------------- */
 
 package library;
@@ -15,148 +17,233 @@ import java.util.Scanner;
 /**
  * Main class – runs the console UI loop.
  *
- * **WEEK 2 Enhancements:**
- *   • Demonstrates interface usage (Borrowable)
- *   • Demonstrates polymorphism (different borrow periods per book type)
- *   • Added borrow/return functionality
+ * **WEEK 3**: Demonstrates abstraction, constructors, and access specifiers
  */
 public class Main {
 
-    // -----------------------------------------------------------------
-    //  Fields
-    // -----------------------------------------------------------------
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Private static fields - only accessible within Main class
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final Library LIBRARY = new Library();
-    private static final User CURRENT_USER = new User("Alice", 50.00);
+    private static Library library;
+    private static User currentUser;
 
-    // -----------------------------------------------------------------
-    //  Main entry point
-    // -----------------------------------------------------------------
     public static void main(String[] args) {
-        // 1️⃣ Informative indicator (week, title, name)
+        // Display Week 3 header
         MessageBox.printHeader();
 
-        // 2️⃣ Seed demo data (realistic objects)
-        seedDemoData();
+        // Initialize library and user
+        initializeSystem();
 
-        // 3️⃣ UI loop
+        // Demonstrate Week 3 features
+        demonstrateWeek3Features();
+
+        // Run UI loop
+        runApplicationLoop();
+
+        // Exit
+        MessageBox.goodbye();
+        SCANNER.close();
+    }
+
+    /**
+     * **WEEK 3: CONSTRUCTORS DEMONSTRATION**
+     * Shows different constructor usage.
+     */
+    private static void initializeSystem() {
+        System.out.println("═══ INITIALIZING SYSTEM ═══\n");
+        
+        // **CONSTRUCTORS**: Library with custom name
+        library = new Library("Community Book-Sharing Library");
+        System.out.println("✓ Library created: " + library.getLibraryName());
+        
+        // **CONSTRUCTORS**: User with starting balance
+        currentUser = new User("Alice", 100.00);
+        System.out.println("✓ User created: " + currentUser);
+        
+        // Seed data demonstrating various constructors
+        seedDemoData();
+        
+        System.out.println("\n═══════════════════════════════════\n");
+    }
+
+    /**
+     * **WEEK 3: ABSTRACTION DEMONSTRATION**
+     * Shows abstract Media class and polymorphic method calls.
+     */
+    private static void demonstrateWeek3Features() {
+        System.out.println("═══ WEEK 3 FEATURE DEMONSTRATION ═══\n");
+        
+        System.out.println("** ABSTRACTION DEMONSTRATION **");
+        System.out.println("All media types extend abstract Media class");
+        System.out.println("Each implements abstract methods differently:\n");
+        
+        // Create instances using different constructors
+        Book book = new Book("1984", "George Orwell", 12.99, "Dystopian", 4.8, 328);
+        EBook ebook = new EBook("Neuromancer", "William Gibson", 9.99, 
+                               "Cyberpunk", 4.6, "EPUB", 2.3);
+        Audiobook audiobook = new Audiobook("Dune", "Frank Herbert", 14.99,
+                                           "Sci-Fi", 4.9, 600, 1260, "Scott Brick");
+        
+        Media[] mediaItems = {book, ebook, audiobook};
+        
+        // **ABSTRACTION**: Polymorphic calls to abstract methods
+        for (Media media : mediaItems) {
+            System.out.printf("Title: %-20s Type: %-10s\n", 
+                            media.getTitle(), media.getMediaType());
+            System.out.printf("  Info: %s\n", media.getTypeSpecificInfo());
+            System.out.printf("  Borrow Period: %d days\n", media.getBorrowPeriodDays());
+            // Calling abstract method - each type calculates differently
+            System.out.printf("  Late Fee (7 days): $%.2f\n", 
+                            media.calculateLateFee(7));
+            System.out.println();
+        }
+        
+        System.out.println("Notice: Same method calls, different behavior!");
+        System.out.println("This is polymorphism with abstract classes.\n");
+        
+        System.out.println("** CONSTRUCTORS DEMONSTRATION **");
+        System.out.println("Multiple constructors with validation:\n");
+        
+        // Full constructor
+        Book fullBook = new Book("Title", "Author", 9.99, "Fiction", 4.5, 300);
+        System.out.println("✓ Full constructor: " + fullBook.getTitle());
+        
+        // Partial constructor (constructor chaining)
+        Book partialBook = new Book("Short Title", "Author", 5.99, "Fiction", 4.0);
+        System.out.println("✓ Partial constructor (chains to full): " + partialBook.getTitle());
+        
+        // Minimal constructor
+        Book minimalBook = new Book("Minimal", "Author");
+        System.out.println("✓ Minimal constructor (chains with defaults): " + minimalBook.getTitle());
+        
+        System.out.println("\n** ACCESS SPECIFIERS DEMONSTRATION **");
+        System.out.println("Proper encapsulation implemented:");
+        System.out.println("  • Private fields (wallet, borrower, etc.)");
+        System.out.println("  • Protected methods (for inheritance)");
+        System.out.println("  • Public methods (for external access)");
+        System.out.println("  • Package-private (for related classes only)\n");
+        
+        System.out.println("═══════════════════════════════════\n");
+    }
+
+    /**
+     * Seed the catalogue with demo data.
+     * **WEEK 3**: Uses different constructors.
+     */
+    private static void seedDemoData() {
+        // Using various constructors to demonstrate flexibility
+        
+        // Full constructor
+        library.addMedia(new EBook(
+                "The Time Machine", "H. G. Wells", 4.99,
+                "Science Fiction", 4.2, 118,
+                "EPUB", 2.1));
+        
+        // Partial constructor
+        library.addMedia(new Audiobook(
+                "Pride and Prejudice", "Jane Austen", 3.49,
+                "Classic", 4.5,
+                720, "Rosamund Pike"));
+        
+        library.addMedia(new EBook(
+                "Dune", "Frank Herbert", 5.99,
+                "Science Fiction", 4.7, 412,
+                "PDF", 3.4));
+        
+        library.addMedia(new Audiobook(
+                "1984", "George Orwell", 4.49,
+                "Dystopian", 4.6,
+                600, "Simon Prebble"));
+        
+        System.out.println("✓ Catalogue populated with 4 books");
+    }
+
+    /**
+     * Main application loop.
+     */
+    private static void runApplicationLoop() {
         boolean running = true;
         while (running) {
             MessageBox.printMenu();
             String input = SCANNER.nextLine().trim().toUpperCase();
 
             switch (input) {
-                case "B":   // Browse catalogue
-                    LIBRARY.listCatalog();
+                case "B":
+                    library.listCatalog();
                     break;
-                case "P":   // Purchase a book
+                case "P":
                     handlePurchase();
                     break;
-                case "L":   // Loan (borrow) a book - NEW for Week 2
+                case "L":
                     handleBorrow();
                     break;
-                case "R":   // Return a book - NEW for Week 2
+                case "R":
                     handleReturn();
                     break;
-                case "S":   // Share a finished book
-                    handleShare();
+                case "F":  // NEW for Week 3
+                    handleLateFee();
                     break;
-                case "M":   // My library (personal shelf)
-                    CURRENT_USER.getShelf().listOwnedBooks();
+                case "M":
+                    currentUser.getShelf().listOwnedBooks();
                     break;
-                case "Q":   // Quit
+                case "Q":
                     running = false;
                     break;
                 default:
-                    System.out.println("Unrecognised command – please try again.");
+                    System.out.println("Unrecognized command – please try again.");
             }
         }
-
-        // 4️⃣ Exit message
-        MessageBox.goodbye();
     }
 
-    // -----------------------------------------------------------------
-    //  Helper methods for UI actions
-    // -----------------------------------------------------------------
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Private helper methods - only used within Main class
+    
     private static void handlePurchase() {
         System.out.print("Enter the ID of the book you wish to purchase: ");
-        int id = Integer.parseInt(SCANNER.nextLine().trim());
-        LIBRARY.purchase(CURRENT_USER, id);
+        try {
+            int id = Integer.parseInt(SCANNER.nextLine().trim());
+            library.purchase(currentUser, id);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID. Please enter a number.");
+        }
     }
 
-    /**
-     * **WEEK 2: Demonstrates Polymorphism**
-     * Borrow a book - different book types have different borrow periods.
-     */
     private static void handleBorrow() {
         System.out.print("Enter the ID of the book you wish to borrow: ");
-        int id = Integer.parseInt(SCANNER.nextLine().trim());
-        LIBRARY.borrowBook(CURRENT_USER, id);
+        try {
+            int id = Integer.parseInt(SCANNER.nextLine().trim());
+            library.borrowMedia(currentUser, id);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID. Please enter a number.");
+        }
+    }
+
+    private static void handleReturn() {
+        System.out.print("Enter the ID of the book you wish to return: ");
+        try {
+            int id = Integer.parseInt(SCANNER.nextLine().trim());
+            library.returnMedia(currentUser, id);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID. Please enter a number.");
+        }
     }
 
     /**
-     * **WEEK 2: Demonstrates Polymorphism**
-     * Return a borrowed book using the Borrowable interface.
+     * **WEEK 3: NEW FEATURE**
+     * Calculate late fees - demonstrates abstract method usage.
      */
-    private static void handleReturn() {
-        System.out.print("Enter the ID of the book you wish to return: ");
-        int id = Integer.parseInt(SCANNER.nextLine().trim());
-        LIBRARY.returnBook(CURRENT_USER, id);
-    }
-
-    private static void handleShare() {
-        System.out.print("Enter the ID of a book you have finished (to share): ");
-        int id = Integer.parseInt(SCANNER.nextLine().trim());
-        LIBRARY.share(CURRENT_USER, id);
-    }
-
-    /** 
-     * Populate the catalogue with a few realistic books.
-     * 
-     * **WEEK 2: Demonstrates polymorphism**
-     * Each book type implements Borrowable interface differently.
-     */
-    private static void seedDemoData() {
-        // Base Book objects (via derived classes)
-        // Each has different borrow periods demonstrating polymorphism
-        Book b1 = new EBook(
-                "The Time Machine", "H. G. Wells", 4.99,
-                "Science Fiction", 4.2,
-                "EPUB", 2.1);
-        Book b2 = new Audiobook(
-                "Pride and Prejudice", "Jane Austen", 3.49,
-                "Classic", 4.5,
-                720, "Emma Thompson");
-        Book b3 = new EBook(
-                "Dune", "Frank Herbert", 5.99,
-                "Science Fiction", 4.7,
-                "PDF", 3.4);
-        Book b4 = new Audiobook(
-                "1984", "George Orwell", 4.49,
-                "Dystopian", 4.6,
-                600, "Simon Prebble");
-
-        LIBRARY.addBook(b1);
-        LIBRARY.addBook(b2);
-        LIBRARY.addBook(b3);
-        LIBRARY.addBook(b4);
-        
-        // **POLYMORPHISM DEMONSTRATION**
-        System.out.println("\n=== Demonstrating Polymorphism ===");
-        System.out.println("Books implement the Borrowable interface with different borrow periods:\n");
-        
-        // Using Borrowable reference type - demonstrates polymorphism
-        Borrowable[] borrowables = {b1, b2, b3, b4};
-        for (Borrowable item : borrowables) {
-            // Polymorphic call - same method, different behavior based on book type
-            Book book = (Book) item;
-            System.out.printf("%-30s | Type: %-10s | Borrow Period: %d days\n", 
-                             book.getTitle(), 
-                             book.getType(),
-                             item.getBorrowPeriodDays());
+    private static void handleLateFee() {
+        System.out.print("Enter the ID of the media item: ");
+        try {
+            int id = Integer.parseInt(SCANNER.nextLine().trim());
+            System.out.print("Enter number of days late: ");
+            int days = Integer.parseInt(SCANNER.nextLine().trim());
+            
+            // **ABSTRACTION**: calculateLateFee is an abstract method
+            // Each media type implements it differently
+            library.calculateLateFeeForItem(id, days);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter numbers only.");
         }
-        System.out.println("\nNotice: Different book types return different borrow periods!");
-        System.out.println("=================================\n");
     }
 }

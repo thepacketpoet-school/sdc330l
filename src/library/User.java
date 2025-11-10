@@ -1,61 +1,110 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 2
+   Assignment: Project Part 3
    Author: Haley Archer
-   Date: 19 Oct 2025
-   Purpose: Simple representation of a user. Holds a **Shelf** object,
-            which demonstrates **composition** (User "has a" Shelf).
+   Date: 26 Oct 2025
+   Purpose: User class with enhanced constructors and access control.
+            
+            **WEEK 3 UPDATES:**
+            - Multiple constructors
+            - Proper access specifiers
+            - Input validation
    -------------------------------------------------------------- */
 
 package library;
 
 /**
- * Represents a user of the system.
+ * Represents a user of the library system.
+ * Demonstrates composition (User "has a" Shelf).
  */
 public class User {
+    
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Private fields - encapsulation
     private final String name;
-    private double wallet;          // money available for purchases
-    private final Shelf shelf;      // composition – a user owns a shelf
-
+    private double wallet;
+    private final Shelf shelf;
+    
+    // **WEEK 3: CONSTRUCTORS**
+    // Constructor 1: Full constructor with wallet balance
+    /**
+     * Full constructor creating a user with starting balance.
+     * Validates input parameters.
+     */
     public User(String name, double startingBalance) {
-        this.name = name;
-        this.wallet = startingBalance;
-        this.shelf = new Shelf(this);   // composition relationship
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("User name cannot be empty");
+        }
+        this.name = name.trim();
+        this.wallet = Math.max(0, startingBalance);  // No negative balance
+        this.shelf = new Shelf(this);
     }
-
-    // -----------------------------------------------------------------
-    // Wallet helpers
-    // -----------------------------------------------------------------
+    
+    // **WEEK 3: CONSTRUCTORS**
+    // Constructor 2: Default constructor with zero balance
+    /**
+     * Constructor with default zero balance.
+     * Demonstrates constructor chaining.
+     */
+    public User(String name) {
+        this(name, 0.0);  // Chain to full constructor
+    }
+    
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Public methods for wallet management
+    
     public double getWallet() {
         return wallet;
     }
-
-    public void debit(double amount) {
-        wallet -= amount;
+    
+    /**
+     * Add funds to wallet.
+     * @param amount Amount to add (must be positive)
+     */
+    public void addFunds(double amount) {
+        if (amount > 0) {
+            this.wallet += amount;
+        }
     }
-
-    // -----------------------------------------------------------------
-    // Shelf accessor
-    // -----------------------------------------------------------------
+    
+    /**
+     * Debit funds from wallet.
+     * **WEEK 3: ACCESS SPECIFIERS - package-private**
+     * Only Library class can debit funds.
+     */
+    void debit(double amount) {
+        if (amount > 0 && amount <= wallet) {
+            wallet -= amount;
+        }
+    }
+    
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Public accessor methods
+    
     public Shelf getShelf() {
         return shelf;
     }
 
-    // -----------------------------------------------------------------
-    // Misc helpers used by Library
-    // -----------------------------------------------------------------
     public String getName() {
         return name;
     }
-
-    public void addBookToShelf(Book b) {
+    
+    // **WEEK 3: ACCESS SPECIFIERS**
+    // Package-private helper methods (used by Library)
+    
+    void addBookToShelf(Book b) {
         shelf.addBook(b);
     }
 
-    public Book removeBookFromShelf(int bookId) {
+    Book removeBookFromShelf(int bookId) {
         return shelf.removeBook(bookId);
     }
 
-    public Book findBookOnShelf(int bookId) {
+    Book findBookOnShelf(int bookId) {
         return shelf.findBook(bookId);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("User: %s, Wallet: $%.2f", name, wallet);
     }
 }

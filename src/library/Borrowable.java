@@ -1,11 +1,12 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 2
+   Assignment: Project Part 3
    Author: Haley Archer
-   Date: 19 Oct 2025
+   Date: 26 Oct 2025
    Purpose: Interface that defines behavior for items that can be
             borrowed and returned in the library system.
             
-            **WEEK 2 REQUIREMENT: Interface Creation**
+            **WEEK 2**: Interface Creation
+            **WEEK 3**: Used with abstract Media class
    -------------------------------------------------------------- */
 
 package library;
