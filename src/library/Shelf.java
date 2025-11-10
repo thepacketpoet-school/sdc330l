@@ -1,9 +1,9 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 1
+   Assignment: Project Part 2
    Author: Haley Archer
-   Date: 12 Oct 2025
+   Date: 19 Oct 2025
    Purpose: Represents a collection of books owned by a single user.
-            Demonstrates **composition** – Shelf “has many” Book objects.
+            Demonstrates **composition** – Shelf "has many" Book objects.
    -------------------------------------------------------------- */
 
 package library;
@@ -15,7 +15,7 @@ import java.util.List;
  * Simple container for a user's owned books.
  */
 public class Shelf {
-    private final User owner;               // back‑reference (optional)
+    private final User owner;               // back-reference (optional)
     private final List<Book> ownedBooks = new ArrayList<>();
 
     public Shelf(User owner) {
@@ -53,9 +53,9 @@ public class Shelf {
             return;
         }
         System.out.println(
-                "ID  Title                     Author               Genre        Price   Rating  Type");
+                "ID  Title                     Author               Genre        Price   Rating  Type       Status");
         System.out.println(
-                "--------------------------------------------------------------------------------");
+                "----------------------------------------------------------------------------------------------------");
         for (Book b : ownedBooks) {
             System.out.println(b);
         }

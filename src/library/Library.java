@@ -1,9 +1,12 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 1
+   Assignment: Project Part 2
    Author: Haley Archer
-   Date: 12 Oct 2025
+   Date: 19 Oct 2025
    Purpose: Central manager that holds the catalogue of all books.
-            Demonstrates **composition** – Library “has many” Book objects.
+            
+            Demonstrates:
+            - **Composition** (Library "has many" Book objects)
+            - **Polymorphism** (works with Borrowable interface)
    -------------------------------------------------------------- */
 
 package library;
@@ -12,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Holds the master list of books and implements purchase / share logic.
+ * Holds the master list of books and implements purchase/share/borrow logic.
+ * 
+ * **WEEK 2: Enhanced with borrow/return functionality using Borrowable interface**
  */
 public class Library {
     private final List<Book> catalogue = new ArrayList<>(); // composition
@@ -26,9 +31,9 @@ public class Library {
     public void listCatalog() {
         System.out.println("\n--- Book Catalogue ---");
         System.out.println(
-                "ID  Title                     Author               Genre        Price   Rating  Type");
+                "ID  Title                     Author               Genre        Price   Rating  Type       Status");
         System.out.println(
-                "--------------------------------------------------------------------------------");
+                "----------------------------------------------------------------------------------------------------");
         for (Book b : catalogue) {
             System.out.println(b);
         }
@@ -49,6 +54,68 @@ public class Library {
         user.debit(target.getPrice());
         user.addBookToShelf(target);
         System.out.println("Purchase successful! \"" + target.getTitle() + "\" added to your library.");
+    }
+
+    /**
+     * **WEEK 2: Polymorphism Demonstration**
+     * Borrow a book from the library using the Borrowable interface.
+     * Different book types have different borrow periods.
+     */
+    public void borrowBook(User user, int bookId) {
+        Book target = findInCatalogue(bookId);
+        if (target == null) {
+            System.out.println("Book not found in catalogue.");
+            return;
+        }
+        
+        // **POLYMORPHISM**: Using Borrowable interface to work with any book type
+        Borrowable borrowable = target;
+        
+        if (borrowable.isBorrowed()) {
+            System.out.println("Sorry, \"" + target.getTitle() + "\" is already borrowed by " 
+                             + borrowable.getBorrower());
+            return;
+        }
+        
+        if (borrowable.borrow(user.getName())) {
+            System.out.println("Success! You borrowed \"" + target.getTitle() + "\"");
+            System.out.println("Book type: " + target.getType());
+            System.out.println("Borrow period: " + borrowable.getBorrowPeriodDays() + " days");
+            System.out.println("(Note: Different book types have different borrow periods!)");
+        } else {
+            System.out.println("Unable to borrow this book.");
+        }
+    }
+    
+    /**
+     * **WEEK 2: Polymorphism Demonstration**
+     * Return a borrowed book using the Borrowable interface.
+     */
+    public void returnBook(User user, int bookId) {
+        Book target = findInCatalogue(bookId);
+        if (target == null) {
+            System.out.println("Book not found in catalogue.");
+            return;
+        }
+        
+        // **POLYMORPHISM**: Using Borrowable interface
+        Borrowable borrowable = target;
+        
+        if (!borrowable.isBorrowed()) {
+            System.out.println("This book is not currently borrowed.");
+            return;
+        }
+        
+        if (!borrowable.getBorrower().equals(user.getName())) {
+            System.out.println("You cannot return a book you didn't borrow!");
+            return;
+        }
+        
+        if (borrowable.returnItem()) {
+            System.out.println("Thank you for returning \"" + target.getTitle() + "\"!");
+        } else {
+            System.out.println("Unable to return this book.");
+        }
     }
 
     /** Share a finished book – simple simulation. */

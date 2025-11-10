@@ -1,107 +1,187 @@
-# Project Part 1
+# Project Part 2 - Week 2 Submission
 
 **Student:** Haley Archer  
-**Course:** SDC330L — Advanced Object-Oriented Programming with Java  
-**Date:** October 12, 2025
+**Course:** SDC330L – Advanced Object-Oriented Programming with Java  
+**Date:** October 19, 2025
 
 ---
 
-## Project Option
+## Overview
 
-I will be building an **online book-sharing library** (basically a lightweight hybrid of Libby and Little Free Library).
-
-Users can browse a catalogue of books, purchase copies, read them, and share finished books with other users. This week focuses on user interaction design - the Java implementation comes in later weeks.
+Week 2 builds upon the foundation from Week 1 by implementing:
+1. **Borrowable Interface** - Defines the contract for borrowable items
+2. **Polymorphism** - Different book types have different borrow periods
+3. **Enhanced Functionality** - Borrow and return operations
 
 ---
 
-## Application Startup
+## Files Included
 
-When the user launches the application, they see:
+### Source Code
+- `Borrowable.java` - Interface defining borrowable item behavior
+- `Book.java` - Base class implementing Borrowable interface
+- `EBook.java` - Extends Book with 21-day borrow period
+- `Audiobook.java` - Extends Book with 30-day borrow period
+- `Library.java` - Enhanced with borrow/return operations
+- `User.java` - User management
+- `Shelf.java` - Personal book collection
+- `Main.java` - Application entry point with polymorphism demonstration
+- `MessageBox.java` - UI text management
 
+### Documentation
+- `Week2_Design_Document.docx` - Comprehensive software design document
+
+### Screenshots
+- `screenshot1_startup_polymorphism.txt` - Startup showing polymorphism demo
+- `screenshot2_browse_catalogue.txt` - Browse catalogue functionality
+- `screenshot3_borrow_demo.txt` - Borrowing books with different borrow periods
+- `screenshot4_return_demo.txt` - Borrow and return operations
+
+---
+
+## Week 2 Requirements Met
+
+### Part 1: Software Design Document ✅
+The design document includes:
+- List of all classes with purposes
+- Inheritance hierarchy (Book → EBook, Audiobook)
+- Composition relationships (User has-a Shelf, Library has-many Books)
+- Interface definition and implementation (Borrowable)
+- Polymorphism demonstration (getBorrowPeriodDays())
+- Class relationship diagrams
+- Data flow documentation
+- Future enhancement plans
+
+### Part 2: Application Implementation ✅
+The application demonstrates:
+
+**✅ Week 2 Indicator**
+- Displays "Week 2 Project" in header
+- Shows student name: Haley Archer
+
+**✅ Welcome Message**
+- Provides clear instructions
+- Lists all available commands
+- Highlights new Week 2 features (borrow/return)
+
+**✅ Interface Creation**
+- `Borrowable` interface defines 5 methods
+- Book class implements all interface methods
+- Interface allows future extensibility (magazines, DVDs, etc.)
+
+**✅ Polymorphism Demonstration**
+- `getBorrowPeriodDays()` method returns different values per book type:
+  * EBook: 21 days
+  * Audiobook: 30 days
+  * Regular Book: 14 days
+- Library class works with Borrowable interface polymorphically
+- Startup includes explicit polymorphism demonstration
+- Borrow operation shows type-specific borrow periods
+
+**✅ Inheritance (from Week 1)**
+- Book base class
+- EBook and Audiobook derived classes
+- Shared functionality in base class
+- Type-specific functionality in derived classes
+
+**✅ Realistic Data**
+- 4 books with realistic information
+- Proper titles, authors, genres, prices, ratings
+- Type-specific attributes (file formats, narrators)
+
+**✅ Information Display**
+- Formatted catalogue display
+- Borrow status indicators
+- Type-specific information shown
+
+**✅ Code Documentation**
+- Header comments with name, date, purpose
+- Inline comments marking:
+  * Interface implementation points
+  * Polymorphism demonstration points
+  * Week 2 specific features
+
+---
+
+## How Polymorphism is Demonstrated
+
+The application demonstrates polymorphism in multiple ways:
+
+1. **At Startup:**
+   - Iterates through books using Borrowable interface
+   - Shows each book type returns different borrow period
+   - Same method call, different results based on type
+
+2. **During Borrowing:**
+   - User borrows different book types
+   - System displays type-specific borrow period
+   - Library works with Borrowable interface, not concrete types
+
+3. **In Code:**
+   ```java
+   // Polymorphic reference
+   Borrowable borrowable = target;
+   
+   // Same method, different behavior
+   borrowable.getBorrowPeriodDays();  
+   // Returns 21 for EBook, 30 for Audiobook
+   ```
+
+---
+
+## Key Design Decisions
+
+### Why Use Borrowable Interface?
+1. **Extensibility** - Can add new borrowable types without changing Library
+2. **Polymorphism** - Library works with any Borrowable uniformly
+3. **Separation of Concerns** - Borrowing logic separate from book attributes
+4. **Testability** - Can create mock Borrowable objects for testing
+
+### Why Different Borrow Periods?
+- **Realistic** - Different media types have different consumption times
+- **Clear Demonstration** - Makes polymorphism obvious to users
+- **Practical** - Audiobooks take longer to listen to than e-books to read
+
+---
+
+## Running the Application
+
+```bash
+# Compile
+javac -d . *.java
+
+# Run
+java library.Main
 ```
-=== Online Book-Sharing Library ===
 
-Student: Haley Archer
-
--------------------------------------------------------------------
-
-"A good book is a friend you can carry anywhere; a best friend is one
-who shares good books."
-
--------------------------------------------------------------------
-
-Welcome to our neighborhood! This console application will let you:
-
-  • Browse the catalogue
-  • Purchase books
-  • Share books you have finished
-  • View your personal library
-
-Please choose an option:
-
-  (B)rowse catalogue
-  (P)urchase a book
-  (S)hare a finished book
-  (M)y library
-  (Q)uit
-
-Enter command:
-```
+**Available Commands:**
+- `B` - Browse catalogue
+- `P` - Purchase a book
+- `L` - Loan (borrow) a book
+- `R` - Return a book
+- `S` - Share a finished book
+- `M` - My library
+- `Q` - Quit
 
 ---
 
-## User Input Commands
+## Next Steps (Week 3)
 
-All commands use a single character followed by any required input (keeps things simple):
-
-| Action | Input Format |
-|--------|-------------|
-| **Purchase a book** | Type `P`, then enter the book ID from the catalogue |
-| **Share a finished book** | Type `S`, then enter the book ID from your library |
-| **Update book info** | After selecting `S`, the program prompts for which field to edit and the new value |
-| **Display catalogue** | Type `B` to see all books, or `M` for your personal library. Option to filter by genre afterwards |
-
----
-
-## Output Format
-
-### Catalogue Display
-
-Books are shown in a fixed-width table:
-
-```
-ID  Title                  Author         Genre    Price   Type
-------------------------------------------------------------------------
-1   The Time Machine       H. G. Wells    Sci-Fi   $4.99   E-Book
-2   Pride and Prejudice    Jane Austen    Classic  $3.49   Audiobook
-3   Dune                   Frank Herbert  Sci-Fi   $5.99   E-Book
-```
-
-### Personal Library Display
-
-Same format as the catalogue, but includes a column showing whether each book is currently shared.
-
-### Confirmation Messages
-
-After each operation, print a simple confirmation line like "Book purchased successfully!"
-
----
-
-## Exit Options
-
-**Normal exit:** Type `Q` or `Quit` at the main menu. Program displays a goodbye message and terminates.
-
-**Force exit:** User can close the console window or hit Ctrl+C. The program catches the interrupt and displays the goodbye message before exiting.
+- Add constructors with validation
+- Implement proper access specifiers
+- Create abstract base classes
+- Add more robust error handling
 
 ---
 
 ## Summary
 
-This outlines the complete user interaction flow:
+Week 2 successfully demonstrates:
+- ✅ Interface creation and implementation
+- ✅ Clear polymorphism through Borrowable interface
+- ✅ Building upon Week 1's inheritance and composition
+- ✅ Comprehensive design documentation
+- ✅ Well-documented, working code
+- ✅ Professional presentation with screenshots
 
-- Single-character commands for all operations
-- Tabular output for readability
-- Simple filtering options
-- Clean exit handling
-
-The design is intentionally straightforward for now - I'll refine the UX as I build out the actual implementation in the coming weeks.
+All requirements for Week 2 have been met and thoroughly documented.

@@ -1,9 +1,9 @@
 /* --------------------------------------------------------------
-   Assignment: Project Part 1
+   Assignment: Project Part 2
    Author: Haley Archer
-   Date: 12 Oct 2025
+   Date: 19 Oct 2025
    Purpose: Simple representation of a user. Holds a **Shelf** object,
-            which demonstrates **composition** (User “has a” Shelf).
+            which demonstrates **composition** (User "has a" Shelf).
    -------------------------------------------------------------- */
 
 package library;
